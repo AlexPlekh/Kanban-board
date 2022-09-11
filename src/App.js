@@ -1,21 +1,15 @@
 import './App.css';
 import Footer from './components/Footer';
 import Header from './components/Header';
-import MainBoard from './components/MainBoard'; // для тестов, потом удалить
-import dataMock from './components/DataMock';
+import MainBoard from './components/MainBoard';
 import { useState } from 'react'
 import React from 'react-dom'
 import TaskPage from './components/TaskPage';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 
-
-
-
 function App() {
 
-    // поменять sessionStorage на localStorage
-
-    if (!sessionStorage.getItem('data')) {
+    if (!localStorage.getItem('data')) {
         const initialData = [
             {
                 status: 'backlog',
@@ -38,32 +32,29 @@ function App() {
                 tasks: []
             },
         ]
-        // sessionStorage.setItem('data', JSON.stringify(initialData)) // использовать в готовом приложении
-        sessionStorage.setItem('data', JSON.stringify(dataMock)) // для тестов, потом удалить
+        localStorage.setItem('data', JSON.stringify(initialData))
     }
 
-    if (!sessionStorage.getItem('idCount')) {
-        sessionStorage.setItem('idCount', JSON.stringify('5'))
+    if (!localStorage.getItem('idCount')) {
+        localStorage.setItem('idCount', JSON.stringify('1'))
     }
 
     const updateDataStorage = (newData) => {
-        sessionStorage.setItem('data', JSON.stringify(newData))
+        localStorage.setItem('data', JSON.stringify(newData))
     }
 
     const updateIdCountStorage = (newIdCount) => {
-        sessionStorage.setItem('idCount', JSON.stringify(newIdCount))
+        localStorage.setItem('idCount', JSON.stringify(newIdCount))
     }
 
-    const [data, setData] = useState(JSON.parse(sessionStorage.getItem('data')))
-    const [idCount, setIdCount] = useState(JSON.parse(sessionStorage.getItem('idCount')))
-
-    // подумать над названием функций. addTask возвразает изменённую data, addNewTask записывает новое задание в state data и localStaorage
+    const [data, setData] = useState(JSON.parse(localStorage.getItem('data')))
+    const [idCount, setIdCount] = useState(JSON.parse(localStorage.getItem('idCount')))
 
     const addTask = (name, statusId = 0, id = idCount, description = '') => {
         if (name) {
             if (!statusId) {
                 updateIdCountStorage(+idCount + 1)
-                setIdCount(prevCount => prevCount + 1);
+                setIdCount(prevCount => +prevCount + 1);
             };
 
             const task = {
@@ -110,7 +101,7 @@ function App() {
 
     const modifyTaskDescription = (id, description) => {
         const modifiedTask = getTaskById(id);
-        modifiedTask.description = description;     
+        modifiedTask.description = description;
 
         const newData = data.map(taskGroup => {
             const modyfiedTaskGroup = taskGroup.tasks.map(task => {
@@ -118,7 +109,7 @@ function App() {
                 else return modifiedTask
             })
             return modyfiedTaskGroup;
-            
+
         });
         return newData;
     }
@@ -145,7 +136,7 @@ function App() {
                 </Routes>
             </Router>
             <Footer
-                numberOfActiveTasks={data.reduce((sum, taskGroup) => sum + taskGroup.tasks.length, 0)}
+                numberOfActiveTasks={data[0].tasks.length}
                 numberOfFinishedTasks={data[3].tasks.length}
                 year={"2022"}
                 name={'AlexPlekh'}
