@@ -1,14 +1,32 @@
 import React from 'react-dom'
 import TaskGroup from './TaskGroup'
 
-const MainBoard = ({addTask, shiftTask, data}) => {
+const MainBoard = ({ addTask, shiftTask, data }) => {
+
+    const makeFirstCapital = str => {
+        let newStr;
+        if (str.length > 1) {
+            newStr = str.slice(0, 1).toUpperCase() + str.slice(1);
+        } else newStr = str.toUpperCase()
+        return newStr;
+    }
+
+    const findPreviousGroupTasks = statusId => {
+        let PreviousGroup = data.find(taskGroup => taskGroup.statusId === +statusId - 1);
+        if (!PreviousGroup) return [null];
+        return PreviousGroup.tasks;
+    }
 
     return (
         <main className="main">
-            <TaskGroup key={data[0].status + ' group'} data={data[0]} prevGroupTasks={[null]} handleSubmitButton={addTask}>Backlog</TaskGroup>
-            <TaskGroup key={data[1].status + ' group'} data={data[1]} prevGroupTasks={data[0].tasks} handleSubmitButton={shiftTask}>Ready</TaskGroup>
-            <TaskGroup key={data[2].status + ' group'} data={data[2]} prevGroupTasks={data[1].tasks} handleSubmitButton={shiftTask}>In Progress</TaskGroup>
-            <TaskGroup key={data[3].status + ' group'} data={data[3]} prevGroupTasks={data[2].tasks} handleSubmitButton={shiftTask}>Finished</TaskGroup>
+            {data.map(taskGroup => {
+                return <TaskGroup
+                    key={taskGroup.status + ' group'}
+                    data={taskGroup}
+                    prevGroupTasks={findPreviousGroupTasks(taskGroup.statusId)}
+                    handleSubmitButton={(taskGroup.statusId === 0) ? addTask : shiftTask}
+                >{makeFirstCapital(taskGroup.status)}</TaskGroup>
+            })}
         </main>
     )
 }

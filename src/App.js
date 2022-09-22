@@ -104,14 +104,16 @@ function App() {
         modifiedTask.description = description;
 
         const newData = data.map(taskGroup => {
-            const modyfiedTaskGroup = taskGroup.tasks.map(task => {
+            const modyfiedTaskGroup = {...taskGroup}
+            modyfiedTaskGroup.tasks = taskGroup.tasks.map(task => {
                 if (task.id !== modifiedTask.id) return task
                 else return modifiedTask
             })
             return modyfiedTaskGroup;
 
         });
-        return newData;
+        updateDataStorage(newData);
+        setData(newData);
     }
 
     return (
@@ -129,15 +131,15 @@ function App() {
                     } />
                     <Route path='/task/:id' element={
                         <TaskPage
-                            getTask={(id) => getTaskById(id)}
+                            getTask={getTaskById}
                             modifyTaskDescription={modifyTaskDescription}
                         />
                     } />
                 </Routes>
             </Router>
             <Footer
-                numberOfActiveTasks={data[0].tasks.length}
-                numberOfFinishedTasks={data[3].tasks.length}
+                numberOfActiveTasks={data.find(taskGroup => taskGroup.status === 'backlog').tasks.length}
+                numberOfFinishedTasks={data.find(taskGroup => taskGroup.status === 'finished').tasks.length}
                 year={"2022"}
                 name={'AlexPlekh'}
                 key='footer'
