@@ -17,9 +17,11 @@ const MainBoard = ({ addTask, shiftTask, data }) => {
         return PreviousGroup.tasks;
     }
 
+    const sortedData = [...data].sort((a, b) => a.statusId - b.statusId);
+
     return (
         <main className="main">
-            {data.map(taskGroup => {
+            {sortedData.map(taskGroup => {
                 return <TaskGroup
                     key={taskGroup.status + ' group'}
                     data={taskGroup}
